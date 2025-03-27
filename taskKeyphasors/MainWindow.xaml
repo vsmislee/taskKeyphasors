@@ -19,10 +19,7 @@
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="20"/>
+
         </Grid.ColumnDefinitions>
 
         <s:SciChartSurface Grid.Row="1" Grid.Column ="1" x:Name="sciChartSurfaceFirstGraph" s:ThemeManager.Theme="Chrome">
@@ -35,7 +32,7 @@
             </s:SciChartSurface.XAxis>
 
             <s:SciChartSurface.YAxis>
-                <s:NumericAxis GrowBy="0.1,0.1" AxisAlignment="Left"/>
+                <s:NumericAxis VisibleRange="{Binding Source={x:Reference Name=sciChartSurfaceFirstGraphFiltered}, Path=YAxis.VisibleRange, Mode=TwoWay}" GrowBy="0.1,0.1" AxisAlignment="Left"/>
             </s:SciChartSurface.YAxis>
 
             <s:SciChartSurface.ChartModifier>
@@ -52,60 +49,6 @@
         </s:SciChartSurface>
 
         <s:SciChartScrollbar Grid.Row="2" Grid.Column="1" Axis="{Binding ElementName=sciChartSurfaceFirstGraph, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
-
-        <s:SciChartSurface Grid.Row="1" Grid.Column ="3" x:Name="sciChartSurfaceSecondGraph" s:ThemeManager.Theme="Chrome">
-            <s:SciChartSurface.RenderableSeries>
-                <s:FastLineRenderableSeries x:Name="SecondGraphSeries" Stroke="#FF4083B9"/>
-            </s:SciChartSurface.RenderableSeries>
-
-            <s:SciChartSurface.XAxis>
-                <s:NumericAxis VisibleRange="{Binding Source={x:Reference Name=sciChartSurfaceSecondGraphFiltered}, Path=XAxis.VisibleRange, Mode=TwoWay}"/>
-            </s:SciChartSurface.XAxis>
-
-            <s:SciChartSurface.YAxis>
-                <s:NumericAxis GrowBy="0.1,0.1" AxisAlignment="Left"/>
-            </s:SciChartSurface.YAxis>
-
-            <s:SciChartSurface.ChartModifier>
-                <s:ModifierGroup s:MouseManager.MouseEventGroup="MyMouseGroup2">
-                    <s:RubberBandXyZoomModifier ExecuteOn="MouseLeftButton" RubberBandStrokeDashArray="2 2"/>
-                    <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
-                    <s:ZoomPanModifier ExecuteOn="MouseRightButton" ClipModeX="None" />
-                    <s:RolloverModifier ExecuteOn="MouseMove" ShowTooltipOn="MouseHover"/>
-
-                </s:ModifierGroup>
-
-            </s:SciChartSurface.ChartModifier>
-
-        </s:SciChartSurface>
-
-        <s:SciChartScrollbar Grid.Row="2" Grid.Column="3" Axis="{Binding ElementName=sciChartSurfaceSecondGraph, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
-
-        <s:SciChartSurface Grid.Row="1" Grid.Column ="5" x:Name="sciChartSurfaceThirdGraph" s:ThemeManager.Theme="Chrome">
-            <s:SciChartSurface.RenderableSeries>
-                <s:FastLineRenderableSeries x:Name="ThirdGraphSeries" Stroke="#FF4083B9"/>
-            </s:SciChartSurface.RenderableSeries>
-
-            <s:SciChartSurface.XAxis>
-                <s:NumericAxis VisibleRange="{Binding Source={x:Reference Name=sciChartSurfaceThirdGraphFiltered}, Path=XAxis.VisibleRange, Mode=TwoWay}"/>
-            </s:SciChartSurface.XAxis>
-
-            <s:SciChartSurface.YAxis>
-                <s:NumericAxis GrowBy="0.1,0.1" AxisAlignment="Left"/>
-            </s:SciChartSurface.YAxis>
-
-            <s:SciChartSurface.ChartModifier>
-                <s:ModifierGroup s:MouseManager.MouseEventGroup="MyMouseGroup3">
-                    <s:RubberBandXyZoomModifier ExecuteOn="MouseLeftButton" RubberBandStrokeDashArray="2 2"/>
-                    <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
-                    <s:ZoomPanModifier ExecuteOn="MouseRightButton" ClipModeX="None" />
-                    <s:RolloverModifier ExecuteOn="MouseMove" ShowTooltipOn="MouseHover"/>
-                </s:ModifierGroup>
-            </s:SciChartSurface.ChartModifier>
-
-        </s:SciChartSurface>
-
-        <s:SciChartScrollbar Grid.Row="2" Grid.Column="5" Axis="{Binding ElementName=sciChartSurfaceThirdGraph, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
 
 
 
@@ -136,63 +79,9 @@
         </s:SciChartSurface>
         <s:SciChartScrollbar Grid.Row="4" Grid.Column="1" Axis="{Binding ElementName=sciChartSurfaceFirstGraphFiltered, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
 
-        <s:SciChartSurface Grid.Row="3" Grid.Column ="3" x:Name="sciChartSurfaceSecondGraphFiltered" s:ThemeManager.Theme="Chrome">
-            <s:SciChartSurface.RenderableSeries>
-                <s:FastLineRenderableSeries x:Name="SecondGraphFilteredSeries" Stroke="#FF4083B9"/>
-            </s:SciChartSurface.RenderableSeries>
 
-            <s:SciChartSurface.XAxis>
-                <s:NumericAxis VisibleRange="0,500"/>
-            </s:SciChartSurface.XAxis>
-
-            <s:SciChartSurface.YAxis>
-                <s:NumericAxis GrowBy="0.1,0.1" AxisAlignment="Left"/>
-            </s:SciChartSurface.YAxis>
-
-            <s:SciChartSurface.ChartModifier>
-                <s:ModifierGroup s:MouseManager.MouseEventGroup="MyMouseGroup2">
-                    <s:RubberBandXyZoomModifier ExecuteOn="MouseLeftButton" RubberBandStrokeDashArray="2 2"/>
-                    <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
-                    <s:ZoomPanModifier ExecuteOn="MouseRightButton" ClipModeX="None" />
-                    <s:RolloverModifier ExecuteOn="MouseMove" ShowTooltipOn="MouseHover"/>
-
-                </s:ModifierGroup>
-
-            </s:SciChartSurface.ChartModifier>
-
-        </s:SciChartSurface>
-
-        <s:SciChartScrollbar Grid.Row="4" Grid.Column="3" Axis="{Binding ElementName=sciChartSurfaceSecondGraphFiltered, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
-
-        <s:SciChartSurface Grid.Row="3" Grid.Column ="5" x:Name="sciChartSurfaceThirdGraphFiltered" s:ThemeManager.Theme="Chrome">
-            <s:SciChartSurface.RenderableSeries>
-                <s:FastLineRenderableSeries x:Name="ThirdGraphFilteredSeries" Stroke="#FF4083B9"/>
-            </s:SciChartSurface.RenderableSeries>
-
-            <s:SciChartSurface.XAxis>
-                <s:NumericAxis VisibleRange="0,500"/>
-            </s:SciChartSurface.XAxis>
-
-            <s:SciChartSurface.YAxis>
-                <s:NumericAxis GrowBy="0.1,0.1" AxisAlignment="Left"/>
-            </s:SciChartSurface.YAxis>
-
-            <s:SciChartSurface.ChartModifier>
-                <s:ModifierGroup s:MouseManager.MouseEventGroup="MyMouseGroup3">
-                    <s:RubberBandXyZoomModifier ExecuteOn="MouseLeftButton" RubberBandStrokeDashArray="2 2"/>
-                    <s:ZoomExtentsModifier ExecuteOn="MouseDoubleClick"/>
-                    <s:ZoomPanModifier ExecuteOn="MouseRightButton" ClipModeX="None" />
-                    <s:RolloverModifier ExecuteOn="MouseMove" ShowTooltipOn="MouseHover"/>
-                </s:ModifierGroup>
-            </s:SciChartSurface.ChartModifier>
-
-        </s:SciChartSurface>
-
-        <s:SciChartScrollbar Grid.Row="4" Grid.Column="5" Axis="{Binding ElementName=sciChartSurfaceThirdGraphFiltered, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
-
-
-        <Button x:Name="filterButton" Grid.Row="0" Grid.Column="1" Content="Фильтрация" Width="70" Height="20" Margin="120,10,50,10" Click="OnFilterButtonClick"/>
-        <ComboBox Grid.Column="1" Margin="0,0,134,0" VerticalAlignment="Center" Height="20" Width="100"  Text="Сигнал" Name="comboBoxChoseSignal" SelectionChanged="OncomboBoxChoseSignalSelectionChanged"/>
+        <Button x:Name="filterButton" Grid.Row="0" Grid.Column="1" Content="Фильтрация" Width="70" Height="20" Margin="112,10,578,10"  Click="OnFilterButtonClick"/>
+        <ComboBox Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" Height="20" Width="100"  Text="Сигнал" Name="comboBoxChoseSignal" HorizontalAlignment="Left" SelectionChanged="OncomboBoxChoseSignalSelectionChanged"/>
 
     </Grid>
 </Window>

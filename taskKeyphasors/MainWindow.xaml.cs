@@ -14,6 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MathNet.Numerics.IntegralTransforms;
+using CsvHelper;
+using System.Globalization;
+using System.IO;
 
 namespace taskKeyphasors
 {
@@ -22,14 +26,6 @@ namespace taskKeyphasors
     /// </summary>
     public partial class MainWindow : Window
     {
-        /*private XyDataSeries<double, double> firstTransducerData = new XyDataSeries<double, double>();
-        private XyDataSeries<double, double> secondTransducerData = new XyDataSeries<double, double>();
-        private XyDataSeries<double, double> thirdTransduserData = new XyDataSeries<double, double>();
-
-        private XyDataSeries<double, double> firstTransducerDataFiltered = new XyDataSeries<double, double>();
-        private XyDataSeries<double, double> secondTransducerDataFiltered = new XyDataSeries<double, double>();
-        private XyDataSeries<double, double> thirdTransduserDataFiltered = new XyDataSeries<double, double>();*/
-
         private XyDataSeries<double, double> currentDataSerries = new XyDataSeries<double, double>();
         private XyDataSeries<double, double> currentDataSerriesFiltered = new XyDataSeries<double, double>();
 
@@ -38,12 +34,14 @@ namespace taskKeyphasors
         private const string pathToSecondData = @"C:\Users\kjgug\OneDrive\Рабочий стол\ТИК\графики\выборки фазоотметик\KE201М011 Виброперемещение (выборка) Без преобразования 25-03-06_12-15-29-791.csv";
         private const string pathToThirdData = @"C:\Users\kjgug\OneDrive\Рабочий стол\ТИК\графики\выборки фазоотметик\KE201М012 Виброперемещение (выборка) Без преобразования 25-03-06_12-15-43-666.csv";
 
+        private const string pathToWriteSecondData = @"C:\Users\kjgug\OneDrive\Рабочий стол\ТИК\графики\скрыны\periods3.csv";
+
         private string currentPath;
 
         MedianFilter medianFilter = new MedianFilter();
         const int countOfNeighbors = 3;
 
-
+        FilterManager filterManager = new FilterManager();
 
         public MainWindow()
         {
@@ -58,14 +56,6 @@ namespace taskKeyphasors
 
             FirstGraphSeries.DataSeries = currentDataSerries;
             FirstGraphFilteredSeries.DataSeries = currentDataSerriesFiltered;
-
-            /*            FirstGraphSeries.DataSeries = currentDataSerries;
-
-
-                        XyDataSeries<double, double> tmp1 = TakeValuesFromSource(pathToFirstData);
-
-
-                        UpdateDataSeries(currentDataSerries, tmp1.YValues);*/
 
         }
 
@@ -102,13 +92,21 @@ namespace taskKeyphasors
         {
             try
             {
-                IList<double> tmp = medianFilter.Execute(currentDataSerries.YValues.ToArray(), countOfNeighbors).ToList();
-                tmp = medianFilter.Execute(tmp, countOfNeighbors);
-                UpdateDataSeries(currentDataSerriesFiltered, tmp);
+                IList<double> tmp;
+                double[] data = currentDataSerries.YValues.ToArray();
+
+                data = filterManager.IntervalsFilter(data, 1000);
+                data = filterManager.IntervalDrop(data, 1000);
+                //data = filterManager.IntervalDrop(data, 750);
+
+                UpdateDataSeries(currentDataSerriesFiltered, data);
+
+
+                ShowPeriod(data);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
         }
 
@@ -132,5 +130,45 @@ namespace taskKeyphasors
             currentDataSerriesFiltered.Clear();
             
         }
+
+        private void ShowPeriod(double[] signal)
+        {
+            List<int> periods = new List<int>();
+
+            int periodCount = 0;
+            bool isPeriodOnGo = false;
+
+            double previousValue = signal[0];
+            double max = signal.Max();
+            double min = signal.Min();
+
+            for (int i = 0; i < signal.Length; i++)
+            {
+                if (previousValue == min && signal[i] == max)
+                {
+                    periods.Add(periodCount);
+                    periodCount = 0;
+                    previousValue = signal[i];
+                }
+                else
+                {
+                    periodCount++;
+                    previousValue = signal[i];
+                }
+            }
+
+            WriteToCsv(pathToWriteSecondData, periods);
+        }
+
+        public void WriteToCsv(string filePath, List<int> data)  // убрать в другое место
+        {
+            using (var writer = new StreamWriter(filePath))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(data);
+            }
+        }
+
+
     }
 }
