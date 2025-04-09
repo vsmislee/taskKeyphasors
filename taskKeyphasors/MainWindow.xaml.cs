@@ -113,9 +113,9 @@ namespace taskKeyphasors
 
                 UpdateDataSeries(currentDataSerriesFiltered, data);
  
-                //ShowPeriod(data);
-                int[] peaksCoordinates = filterManager.PeaksCoordinates(data);
-                WriteToCsv(currentPathToWrite, peaksCoordinates);
+                ShowPeriod(data);
+                /*int[] peaksCoordinates = filterManager.PeaksCoordinates(data);
+                WriteToCsv(currentPathToWrite, peaksCoordinates);*/
             }
             catch (Exception ex)
             {

@@ -302,8 +302,8 @@ namespace taskKeyphasors
         {
             double minValue = signal.Min();
             int maxLength = MaxSpaceLength(signal);
-            //int lengthForEquals = (int)(maxLength - maxLength * procent);
-            int lengthForEquals = (int)(maxLength * procent);
+            int lengthForEquals = (int)(maxLength - maxLength * procent);
+            //int lengthForEquals = (int)(maxLength * procent);
             int serriesCount = 0;
 
             bool IsSignalBegin = true;
