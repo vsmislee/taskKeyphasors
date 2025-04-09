@@ -283,7 +283,7 @@ namespace taskKeyphasors
                 }
             }
 
-            resultSignal = DoSqareSignal(resultSignal, procent*2);
+            resultSignal = DoSqareSignal(resultSignal, 0.8);
             resultSignal = MyMedianFilter(resultSignal, 5);
 
             return resultSignal;
