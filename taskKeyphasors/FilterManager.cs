@@ -406,7 +406,7 @@ namespace taskKeyphasors
         {
             const double procentOfAmplitude = 0.8;
             const int windowSize = 3;
-            const double procentOfLength = 0.3;
+            const double procentOfLength = 0.1;
 
             double[] resultSignal = new double[signal.Length];
 
