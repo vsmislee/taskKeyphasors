@@ -8,8 +8,7 @@ namespace taskKeyphasors
 {
     class MedianFilter
     {
-
-        public IList<double> Execute(IList<double> signal, int countOfNeighbors)
+        static public IList<double> Execute(IList<double> signal, int countOfNeighbors)
         { 
             List<double> filteredSignal = new List<double>();
             List<double> neighbors = new List<double>(countOfNeighbors);
@@ -54,7 +53,7 @@ namespace taskKeyphasors
                 {
                     median = FindMedianOnInterval(signal, 0, oneSideNeighbors + (oneSideNeighbors - i));// тут тоже самое, но нужно со startIndex и endIndex подумать
                 }
-                else if (i > (signal.Length - oneSideNeighbors)) // i в конце
+                else if (i >= (signal.Length - oneSideNeighbors)) // i в конце
                 {
                     // тут тоже самое, но нужно со startIndex и endIndex подумать
                 }
@@ -69,11 +68,11 @@ namespace taskKeyphasors
 
         }
 
-        private double FindMedianOnInterval(IList<double> list, int startIndex, int endIndex)
+        private static double FindMedianOnInterval(IList<double> list, int startIndex, int endIndex)
         {
             List<double> data = new List<double>();
 
-            for (int i = startIndex; i < endIndex; i++)
+            for (int i = startIndex; i <= endIndex; i++)
             { 
                 data.Add(list[i]);
             }
@@ -82,7 +81,7 @@ namespace taskKeyphasors
 
         }
 
-        private double FindMedian(List<double> list)
+        private static double FindMedian(List<double> list)
         {
             list.Sort();
             int medianIndex = list.Count / 2;

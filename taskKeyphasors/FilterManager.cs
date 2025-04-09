@@ -8,9 +8,27 @@ using MathNet.Filtering.IIR;
 using System.Diagnostics;
 using System.Security.Principal;
 using System.Windows.Media.Effects;
+using System.Xml.Resolvers;
+using System.Security.Cryptography.X509Certificates;
 
 namespace taskKeyphasors
 {
+    //константы 
+    //filterManager.IntervalFilter(data, 1000, 0.40);
+    //data = filterManager.IntervalDrop(data, 1000);
+    //AlignValues(interval, 0.3);
+    //resultSignal = DoSqareSignal(resultSignal, 0.80);
+    //resultSignal = MyMedianFilter(resultSignal, 5);
+
+
+    //для новых
+    //data = filterManager.IntervalFilter(data, 50, 0.40);
+    //data = filterManager.FillSpaces(data, 200);
+   /* const double procentOfAmplitude = 0.8;
+    const int windowSize = 3;
+    const double procentOfLength = 0.3;*/
+
+
     class FilterManager
     {
         public FilterManager() { }
@@ -31,6 +49,16 @@ namespace taskKeyphasors
             OnlineMedianFilter medianFilter = new OnlineMedianFilter(windowSize);
 
             double[] filteredSignal = medianFilter.ProcessSamples(signal);
+
+            return filteredSignal;
+
+        }
+
+        public double[] MyMedianFilter(double[] signal, int windowSize)
+        {
+            MedianFilter medianFilter = new MedianFilter();
+
+            double[] filteredSignal = medianFilter.Execute(signal, windowSize);
 
             return filteredSignal;
 
@@ -85,24 +113,17 @@ namespace taskKeyphasors
         {
             double[] filteredSignal;
 
-            filteredSignal = AverageValueFilter(signal, 3);
-            filteredSignal = MedianFilter(filteredSignal, 3);
-
-            
-
-            //1500
+            /*filteredSignal = AverageValueFilter(signal, 3);
+            filteredSignal = MedianFilter(filteredSignal, 3);*/
 
             filteredSignal = DoSqareSignal(signal, procent);
 
-            //разделить на интервалы
+            //filteredSignal = AverageValueFilter(filteredSignal, 3);
+            filteredSignal = MyMedianFilter(filteredSignal, 3);
 
-           
-            filteredSignal = AverageValueFilter(filteredSignal, 3);
-            filteredSignal = MedianFilter(filteredSignal, 3);
+            //double[] newfilteredSignal = LastFilter(filteredSignal);
 
-            double[] newfilteredSignal = LastFilter(filteredSignal);
-
-            return newfilteredSignal;
+            return filteredSignal;
         }
 
         public double[] FilterOnMin(double[] signal, double procent)
@@ -159,10 +180,12 @@ namespace taskKeyphasors
 
             double maxValue = signal.Max();
             double minValue = signal.Min();
+            double amplitude = (maxValue - minValue)/2;
+            double eps = amplitude * procent;
 
             for (int i = 0; i < signal.Length; i++)
             {
-                if (((maxValue - signal[i]) / maxValue) < procent)
+                if ((maxValue - signal[i]) < eps)  // if (((maxValue - signal[i]) / maxValue) < procent)
                 {
                     newSignal[i] = maxValue;
                 }
@@ -182,35 +205,21 @@ namespace taskKeyphasors
 
             double maxValue = signal.Max();
             double minValue = signal.Min();
+            double amplitude = maxValue - minValue;
+            double eps = amplitude * procent;
 
-            if (minValue > 0)
+            for (int i = 0; i < signal.Length; i++)
             {
-                for (int i = 0; i < signal.Length; i++)
+                if (maxValue - signal[i] > eps)
                 {
-                    if (signal[i] > (minValue + minValue * procent))
-                    {
-                        newSignal[i] = maxValue;
-                    }
-                    else
-                    {
-                        newSignal[i] = minValue;
-                    }
+                    newSignal[i] = minValue;
+                }
+                else
+                {
+                    newSignal[i] = maxValue;
                 }
             }
-            else if (minValue < 0)
-            {
-                for (int i = 0; i < signal.Length; i++)
-                {
-                    if (signal[i] > (minValue - minValue * procent))
-                    {
-                        newSignal[i] = maxValue;
-                    }
-                    else
-                    {
-                        newSignal[i] = minValue;
-                    }
-                }
-            }
+
             return newSignal;
         }
 
@@ -237,26 +246,28 @@ namespace taskKeyphasors
 
         }
 
-        public double[] IntervalsFilter(double[] signal, int intervalLength)
+        public double[] IntervalFilter(double[] signal, int intervalLength, double procent)
         {
             double[] resultSignal = new double[signal.Length];
+            const int windowSize = 3;
 
             List<double> s = new List<double>(signal);
 
-            int countOfIntervals = (int)(signal.Length / intervalLength) + 1; ////////////
+            int countOfIntervals = (signal.Length / intervalLength) + 1;
             int startIndex = 0;
             int endIndex = intervalLength;
 
             double[] interval = new double[intervalLength];
             double[] filteredInterval;
 
+            //signal = MyMedianFilter(signal, windowSize);
+
             for (int i = 0; i < countOfIntervals; i++)
             {
-                //s.CopyTo(interval, startIndex);  /// совб функцию
-
                 CopyArray(signal, interval, startIndex, endIndex);
 
-                filteredInterval = Filter(interval, 0.55);
+                filteredInterval = DoSqareSignalOnMin(interval, procent);
+                filteredInterval = MyMedianFilter(filteredInterval, windowSize);
 
                 for (int j = 0, k = startIndex; j < filteredInterval.Length && k < endIndex; j++, k++)
                 {
@@ -272,8 +283,8 @@ namespace taskKeyphasors
                 }
             }
 
-
-            resultSignal = Filter(resultSignal, 0.90);
+            resultSignal = DoSqareSignal(resultSignal, procent*2);
+            resultSignal = MyMedianFilter(resultSignal, 5);
 
             return resultSignal;
         }
@@ -287,31 +298,35 @@ namespace taskKeyphasors
             }
         }
 
-        private void AlignValues(double[] signal) 
+        private void AlignValues(double[] signal, double procent)
         {
             double minValue = signal.Min();
             int maxLength = MaxSpaceLength(signal);
-            int lengthForEquals = (int)(maxLength - maxLength * 0.1);
+            //int lengthForEquals = (int)(maxLength - maxLength * procent);
+            int lengthForEquals = (int)(maxLength * procent);
             int serriesCount = 0;
 
-            for(int i = 0; i < signal.Length; i++)
+            bool IsSignalBegin = true;
+
+            for (int i = 0; i < signal.Length; i++)
             {
                 if (signal[i] == minValue)
                 {
                     serriesCount++;
                 }
-                else if(serriesCount != 0)
+                else if (serriesCount != 0)
                 {
-                    if (serriesCount < lengthForEquals)
+                    if (serriesCount < lengthForEquals && !IsSignalBegin)
                     {
                         SetMaxTo(signal, i - serriesCount, i);
                     }
+                    else
+                    {
+                        IsSignalBegin = false;
+                    }
                     serriesCount = 0;
                 }
-
             }
-
-
         }
 
         private int MaxSpaceLength(double[] signal)
@@ -387,8 +402,12 @@ namespace taskKeyphasors
             
         }
 
-        public double[] IntervalDrop(double[] signal, int intervalLength)
+        public double[] FillSpaces(double[] signal, int intervalLength)
         {
+            const double procentOfAmplitude = 0.8;
+            const int windowSize = 3;
+            const double procentOfLength = 0.3;
+
             double[] resultSignal = new double[signal.Length];
 
             List<double> s = new List<double>(signal);
@@ -404,7 +423,7 @@ namespace taskKeyphasors
             {
                 CopyArray(signal, interval, startIndex, endIndex);
 
-                AlignValues(interval);
+                AlignValues(interval, procentOfLength);
 
                 for (int j = 0, k = startIndex; j < interval.Length && k < endIndex; j++, k++)
                 {
@@ -420,10 +439,8 @@ namespace taskKeyphasors
                 }
             }
 
-            resultSignal = AverageValueFilter(resultSignal, 5);
-            resultSignal = MedianFilter(resultSignal, 5);
-
-            resultSignal = LastFilter(resultSignal);
+            resultSignal = DoSqareSignal(resultSignal, procentOfAmplitude);
+            resultSignal = MyMedianFilter(resultSignal, windowSize);
 
             return resultSignal;
         }
@@ -502,6 +519,16 @@ namespace taskKeyphasors
         }
 
 
+        public void TrimSignal(double[] signal, double trimValue)
+        { 
+            for(int i = 0; i < signal.Length; i++)
+            {
+                if (signal[i] > trimValue)
+                    signal[i] = trimValue;
+            }
+        }
+
+
         private bool IsInInterval(Dictionary<int, int> interval, int value)
         {
             foreach (var item in interval)
@@ -513,6 +540,72 @@ namespace taskKeyphasors
             }
 
             return false;
+        }
+
+
+        private double[] PhasePeriod(double[] signal)
+        {
+            List<double> periods = new List<double>();
+
+            int periodCount = 0;
+            bool isPeriodOnGo = false;
+
+            double previousValue = signal[0];
+            double max = signal.Max();
+            double min = signal.Min();
+
+            for (int i = 0; i < signal.Length; i++)
+            {
+                if (previousValue == max && signal[i] == min)
+                {
+                    periods.Add(periodCount);
+                    periodCount = 0;
+                    previousValue = signal[i];
+                }
+                else
+                {
+                    periodCount++;
+                    previousValue = signal[i];
+                }
+            }
+
+            return periods.ToArray();
+        }
+
+
+
+        public int[] PeaksCoordinates(double[] signal)
+        { 
+            List<int> peaksCoordinates = new List<int>();
+
+            double previousValue = signal[0];
+            double max = signal.Max();
+            double min = signal.Min();
+
+            for (int i = 0; i < signal.Length; i++)
+            {
+                if (previousValue == min && signal[i] == max)
+                {
+                    peaksCoordinates.Add(i);
+                }
+                previousValue = signal[i];
+            }
+
+            return peaksCoordinates.ToArray();
+        }
+
+
+        public int[] FindPeaksCoordinates(double[] signal) // основной метод, который нужно будет вынести
+        {
+            const int intervalLength = 1000;
+            const double procentOfAmplitude = 0.40;
+            const int intervalLengthForFillSpaces = 1000;
+
+            double[] filteredSignal = IntervalFilter(signal, intervalLength, procentOfAmplitude);
+            filteredSignal = FillSpaces(filteredSignal, intervalLengthForFillSpaces);
+            int[] peaksCoordinates = PeaksCoordinates(filteredSignal);
+
+            return peaksCoordinates;
         }
     }
 }

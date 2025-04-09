@@ -80,8 +80,9 @@
         <s:SciChartScrollbar Grid.Row="4" Grid.Column="1" Axis="{Binding ElementName=sciChartSurfaceFirstGraphFiltered, Path=XAxis}" Margin="0,0,0,10" s:ThemeManager.Theme="Chrome"/>
 
 
-        <Button x:Name="filterButton" Grid.Row="0" Grid.Column="1" Content="Фильтрация" Width="70" Height="20" Margin="112,10,578,10"  Click="OnFilterButtonClick"/>
-        <ComboBox Grid.Column="1" Margin="0,0,0,0" VerticalAlignment="Center" Height="20" Width="100"  Text="Сигнал" Name="comboBoxChoseSignal" HorizontalAlignment="Left" SelectionChanged="OncomboBoxChoseSignalSelectionChanged"/>
+        <Button x:Name="filterButton" Grid.Row="0" Grid.Column="1" Content="Фильтрация" Width="70" Height="20" Click="OnFilterButtonClick" Margin="423,10,267,10"/>
+        <ComboBox Grid.Column="1" VerticalAlignment="Center" Height="20" Width="210"  Text="Сигнал" Name="comboBoxChoseSignal" HorizontalAlignment="Left" SelectionChanged="OncomboBoxChoseSignalSelectionChanged"/>
+        <TextBox Name="textBoxTrimValue" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Width="56" Height="22" RenderTransformOrigin="0.511,0.651"/>
 
     </Grid>
 </Window>

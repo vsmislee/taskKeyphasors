@@ -4,6 +4,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using SciChart.Charting.Model.DataSeries;
 using System.IO;
+using System.Collections.Generic;
 
 namespace taskKeyphasors
 {
@@ -36,6 +37,31 @@ namespace taskKeyphasors
 
             return data;
 
+        }
+
+        public IList<double> ReadColumn(string path, int columnIndex)
+        {
+            List<double> data = new List<double>();
+
+            var config = new CsvConfiguration(CultureInfo.GetCultureInfo("ru-RU"))
+            {
+                HasHeaderRecord = true,
+                Delimiter = ";",
+                ShouldSkipRecord = args => args.Row.Parser.Row <= 17
+            };
+
+            using var streamReader = File.OpenText(path);
+            using var csvReader = new CsvReader(streamReader, config);
+
+            //csvReader.Read(); // пропускаем заголовок
+
+            while (csvReader.Read())
+            {
+                data.Add(csvReader.GetField<double>(columnIndex));
+            }
+
+
+            return data;
         }
     }
 }
