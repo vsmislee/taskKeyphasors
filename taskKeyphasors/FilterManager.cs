@@ -267,7 +267,7 @@ namespace taskKeyphasors
                 CopyArray(signal, interval, startIndex, endIndex);
 
                 filteredInterval = DoSqareSignalOnMin(interval, procent);
-                filteredInterval = MyMedianFilter(filteredInterval, windowSize);
+                //filteredInterval = MyMedianFilter(filteredInterval, windowSize);
 
                 for (int j = 0, k = startIndex; j < filteredInterval.Length && k < endIndex; j++, k++)
                 {
@@ -284,7 +284,7 @@ namespace taskKeyphasors
             }
 
             resultSignal = DoSqareSignal(resultSignal, procent*2);
-            resultSignal = MyMedianFilter(resultSignal, 5);
+            //resultSignal = MyMedianFilter(resultSignal, 5);
 
             return resultSignal;
         }
@@ -439,8 +439,8 @@ namespace taskKeyphasors
                 }
             }
 
-            resultSignal = DoSqareSignal(resultSignal, procentOfAmplitude);
-            resultSignal = MyMedianFilter(resultSignal, windowSize);
+            /*resultSignal = DoSqareSignal(resultSignal, procentOfAmplitude);
+            resultSignal = MyMedianFilter(resultSignal, windowSize);*/
 
             return resultSignal;
         }

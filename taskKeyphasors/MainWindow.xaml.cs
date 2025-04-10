@@ -108,14 +108,14 @@ namespace taskKeyphasors
                 IList<double> tmp;
                 double[] data = currentDataSerries.YValues.ToArray();
 
-                data = filterManager.IntervalFilter(data, 1000, 0.40);
-                data = filterManager.FillSpaces(data, 1000);
+                data = filterManager.IntervalFilter(data, 50, 0.40);
+                //data = filterManager.FillSpaces(data, 1000);
 
                 UpdateDataSeries(currentDataSerriesFiltered, data);
  
-                //ShowPeriod(data);
-                int[] peaksCoordinates = filterManager.PeaksCoordinates(data);
-                WriteToCsv(currentPathToWrite, peaksCoordinates);
+                ShowPeriod(data);
+                /*int[] peaksCoordinates = filterManager.PeaksCoordinates(data);
+                WriteToCsv(currentPathToWrite, peaksCoordinates);*/
             }
             catch (Exception ex)
             {
@@ -152,8 +152,9 @@ namespace taskKeyphasors
             }
             else if( comboBoxChoseSignal.SelectedIndex == 5)
             {
-                currentPathToWrite = pathToWriteFourData;
                 currentPathToRead = pathToData6;
+                currentPathToWrite = pathToWriteFourData;
+                
             }
 
             double[] tmp1 = TakeValuesFromSource(currentPathToRead, 1);
